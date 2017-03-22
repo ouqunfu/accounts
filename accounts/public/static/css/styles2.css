@@ -246,6 +246,7 @@ body .record_fields_list ul li:last-child{
 }
 body .record_fields_list ul li .tid-type{
 	margin-left:35px;
+	color:#e6e7ef;
 }
 i{
 	font-style:normal;

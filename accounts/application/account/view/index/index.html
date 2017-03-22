@@ -1,37 +1,4 @@
-<!doctype html>
-<html lang="zh">
-<head>
-<meta charset="UTF-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"> 
-<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<meta name="format-detection" content="telephone=no, email=no">
-<meta name="renderer" content="webkit">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="HandheldFriendly" content="true">
-<meta name="MobileOptimized" content="320">
-<meta name="screen-orientation" content="portrait">
-<meta name="x5-orientation" content="portrait">
-<meta name="full-screen" content="yes">
-<meta name="x5-fullscreen" content="true">
-<meta name="browsermode" content="application">
-<meta name="x5-page-mode" content="app">
-<meta name="msapplication-tap-highlight" content="no">
-<title>{$title}</title>
-
-<link rel="stylesheet" type="text/css" href="__STATIC__css/default.css">
-
-<link rel="stylesheet" href="__STATIC__css/swiper.min.css" type="text/css">
-<!--必要样式-->
-<link rel="stylesheet" type="text/css" href="__STATIC__css/styles2.css?3">
-<link rel="stylesheet" type="text/css" href="__STATIC__css/footer.css">
-
-
-
-<link href="__STATIC__mobiscroll/css/mobiscroll.css" rel="stylesheet" />
-<link href="__STATIC__mobiscroll/css/mobiscroll_date.css" rel="stylesheet" />
-</head>
+{include file="public/header" /}
 <body>
 <div class="record_title">
 	<span>明细</span>
@@ -53,7 +20,7 @@
 	<div class="record_fields_list">
 		<ul class="set-back-color" id="expenditure">
 			{volist name="list" id="vo"}
-			<li><span class="fl-l tid-type">{$vo.tid|get_record_type}</span><span class="fl-r list-money">¥<i>-{$vo.money}</i></span></li>
+			<a href="{:url('account/index/edit')}?rid={$vo.id}"><li><span class="fl-l tid-type">{$vo.tid|get_record_type}</span><span class="fl-r list-money">¥<i>-{$vo.money}</i></span></li></a>
 			{/volist}
 		</ul>
 	</div>

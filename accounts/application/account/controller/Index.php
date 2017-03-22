@@ -42,7 +42,9 @@ class Index extends \think\Controller
 		$begin_time = strtotime($pickdate);
 		$end_time = $begin_time + 24*3600;
 		
-		$map = " is_delete = 0 and trading_time>={$begin_time} and trading_time < {$end_time} ";
+		$user_id = $GLOBALS['user_info']['id'];
+		
+		$map = " user_id={$user_id} and is_delete = 0 and trading_time>={$begin_time} and trading_time < {$end_time} ";
 		$list = db('record')->field("*")->where($map)->order("create_time desc")->select();
 		
 		$sum_money = db('record')->field("*")->where($map)->order("create_time desc")->sum('money');
@@ -63,6 +65,11 @@ class Index extends \think\Controller
 	*/
 	public function add(){
 		
+		$type_info_list = get_all_record_type();
+		$payment_info_list = get_all_payment_type();
+		$this->assign('type_info_list',$type_info_list);
+		$this->assign('payment_info_list',$payment_info_list);
+		
 		$this->assign('pickdate',date('Y年m月d日',time()));
 		$this->assign('tab',1);
 		$this->assign("title", '记账');
@@ -70,7 +77,36 @@ class Index extends \think\Controller
 	}
 	
 	/**
-	* 处理添加，数据入库
+	* 编辑记录页面
+	*/
+	public function edit(){
+		
+		$request = request();
+		// 获取当前请求的所有变量（经过过滤）
+		$input = $request->param();
+		
+		$rid = intval($input['rid']);
+		if(!$rid){
+			$this->error('数据出错');
+		}
+		$map['id'] = $rid;
+		$map['user_id'] = $GLOBALS['user_info']['id'];
+		$record = db('record')->field("*")->where($map)->find();
+		
+		$type_info_list = get_all_record_type();
+		$payment_info_list = get_all_payment_type();
+		$this->assign('type_info_list',$type_info_list);
+		$this->assign('payment_info_list',$payment_info_list);
+		
+		$this->assign('record',$record);
+		$this->assign('pickdate',date('Y年m月d日',$record['trading_time']));
+		$this->assign('tab',1);
+		$this->assign("title", '记账');
+        return $this->fetch('add');
+	}
+	
+	/**
+	* 处理添加\编辑，数据入库
 	*/
 	public function doAdd(){
 		
@@ -93,8 +129,15 @@ class Index extends \think\Controller
 		}
 		
 		$data['trading_time'] = strtotime($pickdate);
-		$data['create_time'] = time();
-		$res = db('record')->insert($data);
+		
+		$rid = intval($input['rid']);
+		if($rid > 0){
+			$data['update_time'] = time();
+			$res = db('record')->where('id',$rid)->update($data);
+		}else{		
+			$data['create_time'] = time();
+			$res = db('record')->insert($data);
+		}
 		if($res){
 			//跳转
 			$this->success('操作成功', url('account/index/index',''));
@@ -146,9 +189,10 @@ class Index extends \think\Controller
 			
 			$list = array();
 			$i = 0;
+			$user_id = $GLOBALS['user_info']['id'];
 			foreach($type_list as $key => $v){
 				
-				$map = " tid={$v['id']} and order_type={$order_type} and is_delete = 0 and trading_time >= {$month_start_time} and trading_time < {$month_end_time} ";
+				$map = " user_id={$user_id} and tid={$v['id']} and order_type={$order_type} and is_delete = 0 and trading_time >= {$month_start_time} and trading_time < {$month_end_time} ";
 				$temp_money = db('record')->where($map)->order("create_time desc")->sum('money');
 				
 				if($temp_money > 0){
